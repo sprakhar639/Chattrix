@@ -1,3 +1,4 @@
+import jwt from 'jsonwebtoken'
 async function isTokenCorrect(req, res, next) {
   const token = req.cookies.token;
   try {
@@ -6,14 +7,13 @@ async function isTokenCorrect(req, res, next) {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
     req.user = decoded;
     next();
   } catch (error) {
-    return res.status(401).json({
+    return res.status(404).json({
       message: "Invalid or expired token",
     });
   }
 }
 
-export { isTokenCorrect };
+export default isTokenCorrect 
