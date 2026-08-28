@@ -13,9 +13,12 @@ async function userRegister(req, res) {
 
 async function userLogin(req,res){
     try{
-     const user=await login(req.body)
+     const {user,accessToken,refreshToken}=await login(req.body)
      
-     return res.status(200).json({messsage:"User logged In successfully",user})
+
+
+     res.cookie("token",refreshToken,)
+     return res.status(200).json({messsage:"User logged In successfully",user,refreshToken})
 
     }
     catch(error){
@@ -25,5 +28,8 @@ async function userLogin(req,res){
     });
     }
 }
+
+
+
 
 export { userRegister ,userLogin};

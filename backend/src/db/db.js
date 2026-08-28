@@ -8,6 +8,7 @@ async function connectDB(req,res){
     }
     catch(error){
         console.error(error)
+        process.exit(1);
     }
 }
 

@@ -1,5 +1,6 @@
 import userModel from "../models/user.model.js";
 import bcrypt from "bcrypt";
+import { generateAccessToken, generateRefreshToken } from "../utils/token.js";
 
 async function register({ username, email, password }) {
   const isalreadyRegistered = await userModel.findOne({
@@ -21,29 +22,29 @@ async function register({ username, email, password }) {
 }
 
 async function login({ username, email, password }) {
-  try {
-    const user = await userModel
-      .findOne({
-        $or: [{ email }, { username }],
-      })
-      .select("+password");
+  const user = await userModel
+    .findOne({
+      $or: [{ email }, { username }],
+    })
+    .select("+password");
 
-    if (!user) {
-      throw new Error("User not exist");
-    }
-
-    // if (!user.verified) {
-    //   throw new Error("User not verified");
-    // }
-
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-
-    if (!isPasswordValid) {
-      throw new Error("Invalid Credentials");
-    }
-    return user;
-  } catch (error) {
-    console.error(error);
+  if (!user) {
+    throw new Error("User not exist");
   }
+
+//   if (!user.verified) {
+//     throw new Error("User not verified");
+//   }
+
+  const isPasswordValid = await bcrypt.compare(password, user.password);
+
+  if (!isPasswordValid) {
+    throw new Error("Invalid Credentials");
+  }
+
+  const refreshToken = generateRefreshToken(user);
+  const accessToken = generateAccessToken(user);
+
+  return {user,refreshToken,accessToken};
 }
 export { register, login };
