@@ -17,7 +17,7 @@ async function userLogin(req,res){
      
 
 
-     res.cookie("token",refreshToken,)
+     res.cookie("token",refreshToken,{httpOnly: true})
      return res.status(200).json({messsage:"User logged In successfully",user,refreshToken})
 
     }

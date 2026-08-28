@@ -10,11 +10,11 @@ function generateRefreshToken(user) {
       expiresIn: "7d",
     },
   );
-  return refreshToken
+  return refreshToken;
 }
 
 function generateAccessToken(user) {
-  const accessToken =jwt.sign(
+  const accessToken = jwt.sign(
     {
       id: user.id,
     },
@@ -23,7 +23,7 @@ function generateAccessToken(user) {
       expiresIn: "15m",
     },
   );
-  return accessToken
+  return accessToken;
 }
 
-export { generateRefreshToken,generateAccessToken };
+export { generateRefreshToken, generateAccessToken };
