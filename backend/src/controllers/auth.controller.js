@@ -1,4 +1,4 @@
-import {register,login} from "../services/auth.service.js";
+import {register,login,verify} from "../services/auth.service.js";
 
 async function userRegister(req, res) {
   try {
@@ -28,8 +28,15 @@ async function userLogin(req,res){
     });
     }
 }
+async function verifyMail(req,res){
+  try{
+    const verifyMail=await verify(req.body)
+      return res.status(201).json({ message: "Email Verified Succeesfully" }, verifyMail);
+  }catch(error){
+    console.error(error)
+  }
+}
 
 
 
-
-export { userRegister ,userLogin};
+export { userRegister,userLogin,verifyMail};
