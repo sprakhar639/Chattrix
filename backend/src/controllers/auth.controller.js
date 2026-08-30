@@ -13,7 +13,6 @@ async function userRegister(req, res) {
     return res.status(400).json({ message: error.message });
   }
 }
-
 async function userLogin(req, res) {
   try {
     const { user, accessToken, refreshToken } = await login(req.body);
