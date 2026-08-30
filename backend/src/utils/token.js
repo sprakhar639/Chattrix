@@ -23,7 +23,10 @@ function generateAccessToken(user) {
       expiresIn: "15m",
     },
   );
+
   return accessToken;
 }
 
-export { generateRefreshToken, generateAccessToken };
+
+
+export { generateRefreshToken, generateAccessToken};

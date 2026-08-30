@@ -1,7 +1,7 @@
 import userModel from "../models/user.model.js";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
-import { generateAccessToken, generateRefreshToken } from "../utils/token.js";
+import { generateAccessToken, generateRefreshToken} from "../utils/token.js";
 import otpModel from "../models/otp.model.js";
 import { sendMail } from "./mail.service.js";
 import { generateOtp, getOtpHtml } from "../utils/otp.js";
@@ -36,7 +36,12 @@ async function register({ username, email, password }) {
 
   await sendMail(email, "OTP Verification", `Your OTP  code is ${otp}`, html);
 
-  return user;
+  const refreshToken = generateRefreshToken(user);
+  const accessToken = generateAccessToken(user);
+ 
+
+  return { user, refreshToken, accessToken };
+
 }
 
 async function login({ username, email, password }) {
@@ -62,6 +67,7 @@ async function login({ username, email, password }) {
 
   const refreshToken = generateRefreshToken(user);
   const accessToken = generateAccessToken(user);
+ 
 
   return { user, refreshToken, accessToken };
 }
