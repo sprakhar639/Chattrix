@@ -27,6 +27,4 @@ function generateAccessToken(user) {
   return accessToken;
 }
 
-
-
-export { generateRefreshToken, generateAccessToken};
+export { generateRefreshToken, generateAccessToken };

@@ -1,5 +1,5 @@
-import jwt from 'jsonwebtoken'
-async function isTokenCorrect(req, res, next) {
+import jwt from "jsonwebtoken";
+async function isjwtTokenCorrect(req, res, next) {
   const token = req.cookies.token;
   try {
     if (!token) {
@@ -16,4 +16,4 @@ async function isTokenCorrect(req, res, next) {
   }
 }
 
-export default isTokenCorrect 
+export default isjwtTokenCorrect;

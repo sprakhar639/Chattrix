@@ -1,12 +1,9 @@
-function generateOtp(){
-    return Math.floor(100000+Math.random()*900000).toString()
+function generateOtp() {
+  return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-
-
-function getOtpHtml(otp)
-{
-     return `
+function getOtpHtml(otp) {
+  return `
         <!DOCTYPE html>
         <html>
         <head>
@@ -26,7 +23,6 @@ function getOtpHtml(otp)
             <p>If you did not request this OTP, ignore this email.</p>
         </body>
         </html>
-   ` ;
+   `;
 }
-export {generateOtp ,getOtpHtml}
-
+export { generateOtp, getOtpHtml };
