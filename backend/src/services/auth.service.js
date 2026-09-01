@@ -1,12 +1,14 @@
 import userModel from "../models/user.model.js";
+import sessionModel from "../models/session.model.js";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
 import { generateAccessToken, generateRefreshToken } from "../utils/token.js";
 import otpModel from "../models/otp.model.js";
 import { sendMail } from "./mail.service.js";
 import { generateOtp, getOtpHtml } from "../utils/otp.js";
+import jwt from "jsonwebtoken";
 
-async function register({ username, email, password }) {
+async function register({ username, email, password, ip, userAgent }) {
   const isalreadyRegistered = await userModel.findOne({
     $or: [{ username }, { email }],
   });
@@ -38,10 +40,22 @@ async function register({ username, email, password }) {
   const refreshToken = generateRefreshToken(user);
   const accessToken = generateAccessToken(user);
 
+  const refreshTokenHash = crypto
+    .createHash("sha256")
+    .update(refreshToken)
+    .digest("hex");
+
+  const session = await sessionModel.create({
+    userId: user.id,
+    refreshTokenHash,
+    ip,
+    userAgent,
+  });
+
   return { user, refreshToken, accessToken };
 }
 
-async function login({ username, email, password }) {
+async function login({ username, email, password, ip, userAgent }) {
   const user = await userModel
     .findOne({
       $or: [{ email }, { username }],
@@ -65,7 +79,60 @@ async function login({ username, email, password }) {
   const refreshToken = generateRefreshToken(user);
   const accessToken = generateAccessToken(user);
 
+  const refreshTokenHash = crypto
+    .createHash("sha256")
+    .update(refreshToken)
+    .digest("hex");
+
+  const session = await sessionModel.create({
+    userId: user.id,
+    refreshTokenHash,
+    ip,
+    userAgent,
+  });
+
   return { user, refreshToken, accessToken };
+}
+
+async function newTokens(oldRefreshToken) {
+  if (!oldRefreshToken) {
+    return response.status(404).json({ message: "Token not found" });
+  }
+  const decoded = jwt.verify({ oldRefreshToken }, process.env.JWT_SECRET);
+  console.log(decoded);
+
+  const userId = decoded.id;
+  console.log(userId);
+
+  const user = await userModel.findOne(userId);
+  console.log(user);
+
+  const oldRefreshTokenHash = crypto
+    .createHash("sha256")
+    .update(oldRefreshToken)
+    .digest("hex");
+
+  const session = await sessionModel.findOne({
+    oldRefreshTokenHash,
+    revoke: false,
+  });
+
+  if (!session) {
+    return response
+      .status(404)
+      .json({ message: "Token not found or already revoked" });
+  }
+
+  const newRefreshToken = generateRefreshToken(user);
+
+  const newRefreshTokenHash = crypto
+    .createHash("sha256")
+    .update(newRefreshToken)
+    .digest("hex");
+  session.refreshTokenHash = newRefreshTokenHash;
+  const newAccessToken = generateAccessToken(user);
+
+  return newRefreshToken;
 }
 
 async function verify({ email, otp }) {
@@ -92,4 +159,4 @@ async function verify({ email, otp }) {
 
   return user;
 }
-export { register, login, verify };
+export { register, login, verify, newTokens };

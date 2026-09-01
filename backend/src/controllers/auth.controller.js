@@ -1,8 +1,17 @@
-import { register, login, verify } from "../services/auth.service.js";
+import {
+  register,
+  login,
+  verify,
+  newTokens,
+} from "../services/auth.service.js";
 
 async function userRegister(req, res) {
   try {
-    const { user, refreshToken, accessToken } = await register(req.body);
+    const { user, refreshToken, accessToken } = await register({
+      ...req.body,
+      ip: req.ip,
+      userAgent: req.headers["user-agent"],
+    });
 
     res.cookie("token", refreshToken, { httpOnly: true });
     return res
@@ -15,7 +24,11 @@ async function userRegister(req, res) {
 }
 async function userLogin(req, res) {
   try {
-    const { user, accessToken, refreshToken } = await login(req.body);
+    const { user, accessToken, refreshToken } = await login({
+      ...req.body,
+      ip: req.ip,
+      userAgent: req.headers["user-agent"],
+    });
 
     res.cookie("token", refreshToken, { httpOnly: true });
     return res
@@ -30,7 +43,11 @@ async function userLogin(req, res) {
 }
 async function verifyMail(req, res) {
   try {
-    const verifyMail = await verify(req.body);
+    const verifyMail = await verify({
+      ...req.body,
+      ip: req.ip,
+      userAgent: req.headers["user-agent"],
+    });
     return res
       .status(201)
       .json({ message: "Email Verified Succeesfully" }, verifyMail);
@@ -38,5 +55,10 @@ async function verifyMail(req, res) {
     console.error(error);
   }
 }
+async function refreshToken(req, res) {
+  const oldRefreshToken = req.cookies.token;
+  const { refreshToken } = await newTokens(oldRefreshToken);
+  res.cookie("token", refreshToken);
+}
 
-export { userRegister, userLogin, verifyMail };
+export { userRegister, userLogin, verifyMail, refreshToken };
