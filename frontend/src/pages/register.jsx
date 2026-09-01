@@ -17,6 +17,7 @@ function register() {
         username,
         password,
       });
+      navigate(`/otp?email=${encodeURIComponent(email)}`);
     } catch (error) {
       console.error(error);
     }
