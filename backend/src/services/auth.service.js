@@ -24,7 +24,6 @@ async function register({ username, email, password }) {
 
   const otp = generateOtp();
   const html = getOtpHtml(otp);
-  console.log(otp);
   const otpHash = crypto.createHash("sha256").update(otp).digest("hex");
 
   await otpModel.create({
