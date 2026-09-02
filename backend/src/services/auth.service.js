@@ -8,7 +8,7 @@ import { sendMail } from "./mail.service.js";
 import { generateOtp, getOtpHtml } from "../utils/otp.js";
 import jwt from "jsonwebtoken";
 
-async function register({ username, email, password, ip, userAgent }) {
+async function register({ username, email, password }) {
   const isalreadyRegistered = await userModel.findOne({
     $or: [{ username }, { email }],
   });
@@ -37,22 +37,7 @@ async function register({ username, email, password, ip, userAgent }) {
 
   await sendMail(email, "OTP Verification", `Your OTP  code is ${otp}`, html);
 
-  const refreshToken = generateRefreshToken(user);
-  const accessToken = generateAccessToken(user);
-
-  const refreshTokenHash = crypto
-    .createHash("sha256")
-    .update(refreshToken)
-    .digest("hex");
-
-  const session = await sessionModel.create({
-    userId: user.id,
-    refreshTokenHash,
-    ip,
-    userAgent,
-  });
-
-  return { user, refreshToken, accessToken };
+  return { user };
 }
 
 async function login({ username, email, password, ip, userAgent }) {
@@ -135,7 +120,7 @@ async function newTokens(oldRefreshToken) {
   return newRefreshToken;
 }
 
-async function verify({ email, otp }) {
+async function verify({ email, otp, ip, userAgent }) {
   const otpHash = crypto.createHash("sha256").update(otp).digest("hex");
   const otpDoc = await otpModel.findOne({
     email,
@@ -157,6 +142,21 @@ async function verify({ email, otp }) {
     { new: true },
   );
 
-  return user;
+  const refreshToken = generateRefreshToken(user);
+  const accessToken = generateAccessToken(user);
+
+  const refreshTokenHash = crypto
+    .createHash("sha256")
+    .update(refreshToken)
+    .digest("hex");
+
+  const session = await sessionModel.create({
+    userId: user.id,
+    refreshTokenHash,
+    ip,
+    userAgent,
+  });
+
+  return { refreshToken };
 }
 export { register, login, verify, newTokens };

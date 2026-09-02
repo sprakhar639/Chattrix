@@ -7,16 +7,12 @@ import {
 
 async function userRegister(req, res) {
   try {
-    const { user, refreshToken, accessToken } = await register({
-      ...req.body,
-      ip: req.ip,
-      userAgent: req.headers["user-agent"],
-    });
+    const { user, refreshToken, accessToken } = await register(
+      req.body);
 
-    res.cookie("token", refreshToken, { httpOnly: true });
     return res
       .status(200)
-      .json({ messsage: "User Registed successfully", user, refreshToken });
+      .json({ messsage: "User Registed successfully", user});
   } catch (error) {
     console.error(error);
     return res.status(400).json({ message: error.message });
@@ -43,14 +39,15 @@ async function userLogin(req, res) {
 }
 async function verifyMail(req, res) {
   try {
-    const verifyMail = await verify({
+    const {refreshToken} = await verify({
       ...req.body,
       ip: req.ip,
       userAgent: req.headers["user-agent"],
     });
-    return res
-      .status(201)
-      .json({ message: "Email Verified Succeesfully" }, verifyMail);
+    res.cookie("token",refreshToken)
+
+     return res.status(201)
+      .json({ message: "User registed Succeesfully" },);
   } catch (error) {
     console.error(error);
   }
