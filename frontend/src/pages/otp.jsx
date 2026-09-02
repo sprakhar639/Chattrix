@@ -28,7 +28,7 @@ function Otp() {
           onChange={(e) => setOtp(e.target.value)}
         />
         <br />
-        <button type="sumbit">Verify</button>
+        <button type="submit">Verify</button>
       </form>
     </div>
   );

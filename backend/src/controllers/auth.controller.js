@@ -1,18 +1,17 @@
 import {
   register,
   login,
-  verify,
+  verifyAndGenerate,
   newTokens,
 } from "../services/auth.service.js";
 
 async function userRegister(req, res) {
   try {
-    const { user, refreshToken, accessToken } = await register(
-      req.body);
+    const { user, refreshToken, accessToken } = await register(req.body);
 
     return res
       .status(200)
-      .json({ messsage: "User Registed successfully", user});
+      .json({ messsage: "User Registed successfully", user });
   } catch (error) {
     console.error(error);
     return res.status(400).json({ message: error.message });
@@ -29,7 +28,7 @@ async function userLogin(req, res) {
     res.cookie("token", refreshToken, { httpOnly: true });
     return res
       .status(200)
-      .json({ messsage: "User logged In successfully", user, refreshToken });
+      .json({ messsage: "User logged In successfully", user, accessToken });
   } catch (error) {
     console.error(error);
     return res.status(401).json({
@@ -39,23 +38,27 @@ async function userLogin(req, res) {
 }
 async function verifyMail(req, res) {
   try {
-    const {refreshToken} = await verify({
+    const { refreshToken } = await verifyAndGenerate({
       ...req.body,
       ip: req.ip,
       userAgent: req.headers["user-agent"],
     });
-    res.cookie("token",refreshToken)
+    res.cookie("token", refreshToken, {
+      httpOnly: true,
+    });
 
-     return res.status(201)
-      .json({ message: "User registed Succeesfully" },);
+    return res.status(201).json({ message: "User registed Succeesfully" });
   } catch (error) {
     console.error(error);
   }
 }
 async function refreshToken(req, res) {
   const oldRefreshToken = req.cookies.token;
-  const { refreshToken } = await newTokens(oldRefreshToken);
+  const { refreshToken, accessToken } = await newTokens(oldRefreshToken);
   res.cookie("token", refreshToken);
+  return res.status(200).json({
+    accessToken,
+  });
 }
 
 export { userRegister, userLogin, verifyMail, refreshToken };

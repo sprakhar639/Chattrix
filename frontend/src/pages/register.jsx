@@ -3,7 +3,7 @@ import { Link,useNavigate } from "react-router-dom";
 import api from "../api/axios";
 import "../App.css";
 
-function register() {
+function Register() {
   const navigate=useNavigate()
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -57,4 +57,4 @@ function register() {
   );
 }
 
-export default register;
+export default Register;

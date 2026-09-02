@@ -124,13 +124,13 @@ async function newTokens(oldRefreshToken) {
     .digest("hex");
   session.refreshTokenHash = newRefreshTokenHash;
   await session.save();
-  console.log("newrefreshTokenHash=",newRefreshTokenHash)
+
   const newAccessToken = generateAccessToken(user);
 
-  return newRefreshToken;
+  return {refreshToken:newRefreshToken,accessToken:newAccessToken};
 }
 
-async function verify({ email, otp, ip, userAgent }) {
+async function verifyAndGenerate({ email, otp, ip, userAgent }) {
   const otpHash = crypto.createHash("sha256").update(otp).digest("hex");
   const otpDoc = await otpModel.findOne({
     email,
@@ -170,4 +170,4 @@ async function verify({ email, otp, ip, userAgent }) {
 
   return { refreshToken };
 }
-export { register, login, verify, newTokens };
+export { register, login, verifyAndGenerate, newTokens };

@@ -2,7 +2,7 @@ import { useState } from "react";
 import {Link,useNavigate} from 'react-router-dom'
 import api from '../api/axios'
 
-function login() {
+function Login() {
     const navigate=useNavigate()
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
@@ -15,6 +15,7 @@ function login() {
         : { username: identifier, password };
       const response = await api.post("/auth/login", data);
       alert("Logged in successfully");
+      navigate("/me")
     } catch (error) {
       console.error(error);
     }
@@ -46,4 +47,4 @@ function login() {
   );
 }
 
-export default login;
+export default Login;
