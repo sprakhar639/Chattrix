@@ -64,10 +64,16 @@ async function login({ username, email, password, ip, userAgent }) {
   const refreshToken = generateRefreshToken(user);
   const accessToken = generateAccessToken(user);
 
+  
   const refreshTokenHash = crypto
-    .createHash("sha256")
-    .update(refreshToken)
-    .digest("hex");
+  .createHash("sha256")
+  .update(refreshToken)
+  .digest("hex");
+  
+  console.log("UserId=",user._id)
+  console.log("RefreshToken=",refreshToken)
+  console.log("accessToken=",accessToken)
+  console.log("refreshTokenHash=",refreshTokenHash)
 
   const session = await sessionModel.create({
     userId: user.id,
@@ -81,40 +87,44 @@ async function login({ username, email, password, ip, userAgent }) {
 
 async function newTokens(oldRefreshToken) {
   if (!oldRefreshToken) {
-    return response.status(404).json({ message: "Token not found" });
+    throw new Error("Token not found" );
   }
-  const decoded = jwt.verify({ oldRefreshToken }, process.env.JWT_SECRET);
-  console.log(decoded);
+  const decoded = jwt.verify(oldRefreshToken, process.env.JWT_SECRET);
 
   const userId = decoded.id;
-  console.log(userId);
 
-  const user = await userModel.findOne(userId);
-  console.log(user);
+  const user = await userModel.findOne({_id:userId});
+  console.log("User=",user)
+
+
 
   const oldRefreshTokenHash = crypto
     .createHash("sha256")
     .update(oldRefreshToken)
     .digest("hex");
+   
 
+  const refreshTokenHash=oldRefreshTokenHash
   const session = await sessionModel.findOne({
-    oldRefreshTokenHash,
-    revoke: false,
+    refreshTokenHash,
+    revoked: false,
   });
 
+
   if (!session) {
-    return response
-      .status(404)
-      .json({ message: "Token not found or already revoked" });
+    throw new Error("Token not found or already revoked");
   }
 
   const newRefreshToken = generateRefreshToken(user);
+
 
   const newRefreshTokenHash = crypto
     .createHash("sha256")
     .update(newRefreshToken)
     .digest("hex");
   session.refreshTokenHash = newRefreshTokenHash;
+  await session.save();
+  console.log("newrefreshTokenHash=",newRefreshTokenHash)
   const newAccessToken = generateAccessToken(user);
 
   return newRefreshToken;
@@ -141,6 +151,7 @@ async function verify({ email, otp, ip, userAgent }) {
     },
     { new: true },
   );
+ // console.log("user=",user)
 
   const refreshToken = generateRefreshToken(user);
   const accessToken = generateAccessToken(user);
