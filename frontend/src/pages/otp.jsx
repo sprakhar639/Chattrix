@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import api from "../api/axios";
 function Otp() {
+  const navigate = useNavigate();
   const [otp, setOtp] = useState("");
   const [searchParams] = useSearchParams();
 
@@ -10,7 +11,7 @@ function Otp() {
     const email = searchParams.get("email");
     try {
       const response = await api.post("/auth/verify", { otp, email });
-      alert("Verified Successfully");
+      navigate("/me");
     } catch (error) {
       console.error(error);
     }
