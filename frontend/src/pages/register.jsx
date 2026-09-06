@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { Link,useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import api from "../api/axios";
 import "../App.css";
 
 function Register() {
-  const navigate=useNavigate()
+  const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -47,11 +47,13 @@ function Register() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <br/>
+        <br />
         <button className="register-btn" type="submit">
           Submit
         </button>
-        <button className="login-btn" onClick={() => navigate("/login")}>Login</button>
+        <button className="login-btn" onClick={() => navigate("/login")}>
+          Login
+        </button>
       </form>
     </div>
   );

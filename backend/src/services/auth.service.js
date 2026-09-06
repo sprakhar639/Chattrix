@@ -168,6 +168,6 @@ async function verifyAndGenerate({ email, otp, ip, userAgent }) {
     userAgent,
   });
 
-  return { refreshToken };
+  return { refreshToken,user };
 }
 export { register, login, verifyAndGenerate, newTokens };

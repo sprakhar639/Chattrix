@@ -38,7 +38,7 @@ async function userLogin(req, res) {
 }
 async function verifyMail(req, res) {
   try {
-    const { refreshToken } = await verifyAndGenerate({
+    const { refreshToken,user } = await verifyAndGenerate({
       ...req.body,
       ip: req.ip,
       userAgent: req.headers["user-agent"],
@@ -47,7 +47,7 @@ async function verifyMail(req, res) {
       httpOnly: true,
     });
 
-    return res.status(201).json({ message: "User registed Succeesfully" });
+    return res.status(201).json({ message: "User registed Succeesfully",user });
   } catch (error) {
     console.error(error);
   }
