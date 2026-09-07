@@ -1,18 +1,18 @@
 import mongoose from "mongoose";
 import "dotenv/config";
 
-async function connectDB(req, res) {
+async function connectDB() {
   if (!process.env.GOOGLE_CLIENT_ID) {
-    throw new Error("GOOGLE_CLINT_ID is not in env file");
+    throw new Error("GOOGLE_CLIENT_ID is not in env file");
   }
   if (!process.env.GOOGLE_CLIENT_SECRET) {
-    throw new Error("GOOGLE_CLINT_SECRET is not in env file");
+    throw new Error("GOOGLE_CLIENT_SECRET is not in env file");
   }
   if (!process.env.GOOGLE_REFRESH_TOKEN) {
     throw new Error("GOOGLE_REFRESH_TOKEN is not in env file");
   }
   if (!process.env.GOOGLE_USER) {
-    throw new Error("GOOGLE_CLINT_ID is not in env file");
+    throw new Error("GOOGLE_USER is not in env file");
   }
   if (!process.env.JWT_SECRET) {
     throw new Error("JWT_SECRET is not in env file");
